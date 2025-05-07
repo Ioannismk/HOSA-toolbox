@@ -9,7 +9,7 @@ Created on Wed May  7 15:50:18 2025
 from setuptools import setup, find_packages
 
 setup(
-    name="hosa_toolbox",
+    name="HOSA-toolbox",
     version="1.0.0",
     author="Ioannismk",
     description="Higher-Order Spectral Analysis Toolbox for Python",

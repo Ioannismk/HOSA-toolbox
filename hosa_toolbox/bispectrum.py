@@ -10,7 +10,7 @@ import numpy as np
 from scipy.signal import convolve2d
 import matplotlib.pyplot as plt
 
-def bispecd(y, nfft=128, wind=5, nsamp=None, overlap=50, fs=1000):
+def bispecd(y, nfft=128, wind=5, nsamp=None, overlap=50):
     """
     Direct (FFT-based) bispectrum estimation with frequency-domain smoothing.
 
@@ -108,8 +108,7 @@ def bispecd(y, nfft=128, wind=5, nsamp=None, overlap=50, fs=1000):
         Bspec = convolve2d(Bspec, opwind, mode='same')
 
     # ----- Frequency axis -----
-    waxis = np.fft.fftshift(np.fft.fftfreq(nfft, d=1/fs))
-
+    waxis = np.fft.fftshift(np.fft.fftfreq(nfft, d=1.0))
 
     return Bspec, waxis
 
@@ -143,8 +142,8 @@ def plot_bispecd(Bspec, waxis, title="Bispectrum View (Full vs. 1st Quadrant)",
     ax = axes[0]
     cf = ax.contourf(waxis, waxis, Babs, levels=levels, cmap=cmap)
     ax.set_title("Full Bispectrum")
-    ax.set_xlabel("f1 (Hz)")
-    ax.set_ylabel("f2 (Hz)")
+    ax.set_xlabel("f1 (normalized)")
+    ax.set_ylabel("f2 (normalized)")
     ax.grid(True)
     fig.colorbar(cf, ax=ax, label='log10(|B|)' if log_scale else '|B|')
 
@@ -156,8 +155,8 @@ def plot_bispecd(Bspec, waxis, title="Bispectrum View (Full vs. 1st Quadrant)",
 
     cf1q = ax.contourf(waxis_pos, waxis_pos, B1Q, levels=levels, cmap=cmap)
     ax.set_title("1st Quadrant: $w_1 + w_2 \\leq 0.5$")
-    ax.set_xlabel("f1 (Hz)")
-    ax.set_ylabel("f2 (Hz)")
+    ax.set_xlabel("f1 (normalized)")
+    ax.set_ylabel("f2 (normalized)")
     ax.grid(True)
 
     fig.colorbar(cf1q, ax=ax, label='log10(|B|)' if log_scale else '|B|')

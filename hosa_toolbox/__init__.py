@@ -11,7 +11,7 @@ from .cumulants import cum2est, cum2x, cum3est, cum4est
 from .bispectrum import bispecd, plot_bispecd
 from .bicoherence import bicoher, plot_bicoher
 from .bispectral_features import (
-    bpsec_areas,
+    bspec_areas,
     bspec_total_area,
     bspec_max_area,
     bspec_entropy,

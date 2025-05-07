@@ -115,7 +115,7 @@ def bispecd(y, nfft=128, wind=5, nsamp=None, overlap=50):
 import numpy as np
 import matplotlib.pyplot as plt
 
-def plot_bispecd_dual(Bspec, waxis, title="Bispectrum View (Full vs. 1st Quadrant)",
+def plot_bispecd(Bspec, waxis, title="Bispectrum View (Full vs. 1st Quadrant)",
                       log_scale=False, levels=30, cmap='viridis'):
     """
     Dual plot: full bispectrum and zoomed-in 1st quadrant.

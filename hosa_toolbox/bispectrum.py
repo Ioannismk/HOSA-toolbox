@@ -159,7 +159,9 @@ def plot_bispecd(Bspec, waxis, title="Bispectrum via Direct Method with Smoothin
         f1_domain = w_positive
         f2_domain = 0.5 - f1_domain
         f2_domain = np.clip(f2_domain, 0, 0.5)
-        plt.plot(f1_domain, f2_domain, 'w--', linewidth=2, label='w1 + w2 = 0.5')
+        # Only show domain line where f1, f2 ≥ 0 and f1 + f2 ≤ 0.5
+        mask = (f2_domain >= 0)
+        plt.plot(f1_domain[mask], f2_domain[mask], 'w--', linewidth=2, label='w1 + w2 = 0.5')
         plt.legend(loc='upper right')
 
     plt.tight_layout()

@@ -143,8 +143,8 @@ def plot_bispecd(Bspec, waxis, title="Bispectrum View (Full vs. 1st Quadrant)",
     ax = axes[0]
     cf = ax.contourf(waxis, waxis, Babs, levels=levels, cmap=cmap)
     ax.set_title("Full Bispectrum")
-    ax.set_xlabel("f1 (normalized)")
-    ax.set_ylabel("f2 (normalized)")
+    ax.set_xlabel("f1 (Hz)")
+    ax.set_ylabel("f2 (Hz)")
     ax.grid(True)
     fig.colorbar(cf, ax=ax, label='log10(|B|)' if log_scale else '|B|')
 
@@ -159,14 +159,6 @@ def plot_bispecd(Bspec, waxis, title="Bispectrum View (Full vs. 1st Quadrant)",
     ax.set_xlabel("f1 (Hz)")
     ax.set_ylabel("f2 (Hz)")
     ax.grid(True)
-
-    # Overlay domain boundary: w1 + w2 = 0.5
-    f1 = waxis_pos
-    f2 = 0.5 - f1
-    f2 = np.clip(f2, 0, 0.5)
-    mask = (f2 >= 0)
-    ax.plot(f1[mask], f2[mask], 'w--', linewidth=2, label='w1 + w2 = 0.5')
-    ax.legend()
 
     fig.colorbar(cf1q, ax=ax, label='log10(|B|)' if log_scale else '|B|')
     fig.suptitle(title)

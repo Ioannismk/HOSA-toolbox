@@ -115,58 +115,60 @@ def bispecd(y, nfft=128, wind=5, nsamp=None, overlap=50):
 import numpy as np
 import matplotlib.pyplot as plt
 
-def plot_bispecd(Bspec, waxis, title="Bispectrum via Direct Method with Smoothing",
-                 log_scale=False, levels=30, cmap="viridis", save_path=None,
-                 show_domain=True):
+def plot_bispecd_dual(Bspec, waxis, title="Bispectrum View (Full vs. 1st Quadrant)",
+                      log_scale=False, levels=30, cmap='viridis'):
     """
-    Enhanced bispectrum plot with optional log scale, contour level control,
-    domain boundary overlay, and save option.
+    Dual plot: full bispectrum and zoomed-in 1st quadrant.
 
     Parameters:
         Bspec : 2D np.ndarray
             Bispectrum matrix (fftshifted, complex-valued)
         waxis : 1D np.ndarray
             Normalized frequency axis [-0.5, 0.5]
-        title : str
-            Plot title
         log_scale : bool
-            If True, show log10(|Bspec|) instead of linear magnitude
+            Show log10(|B|) if True
         levels : int
             Number of contour levels
         cmap : str
-            Colormap name
-        save_path : str or None
-            If provided, saves the figure to this file path
-        show_domain : bool
-            If True, overlays the w1 + w2 ≤ 0.5 domain boundary
+            Colormap
     """
     Babs = np.abs(Bspec)
     if log_scale:
         Babs = np.log10(Babs + 1e-10)
 
-    plt.figure(figsize=(7, 6))
-    contour = plt.contourf(waxis, waxis, Babs, levels=levels, cmap=cmap)
-    plt.colorbar(contour, label='log10(|B(f1,f2)|)' if log_scale else '|B(f1,f2)|')
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    
+    # --- Full Bispectrum Plot ---
+    ax = axes[0]
+    cf = ax.contourf(waxis, waxis, Babs, levels=levels, cmap=cmap)
+    ax.set_title("Full Bispectrum")
+    ax.set_xlabel("f1 (normalized)")
+    ax.set_ylabel("f2 (normalized)")
+    ax.grid(True)
+    fig.colorbar(cf, ax=ax, label='log10(|B|)' if log_scale else '|B|')
 
-    plt.xlabel("f1 (normalized)")
-    plt.ylabel("f2 (normalized)")
-    plt.title(title)
-    plt.grid(True)
+    # --- First Quadrant Zoom-In ---
+    ax = axes[1]
+    waxis_pos = waxis[waxis >= 0]
+    idx_pos = np.where(waxis >= 0)[0]
+    B1Q = Babs[np.ix_(idx_pos, idx_pos)]
 
-    if show_domain:
-        # Overlay domain boundary w1 + w2 = 0.5 in first quadrant
-        w_positive = waxis[waxis >= 0]
-        f1_domain = w_positive
-        f2_domain = 0.5 - f1_domain
-        f2_domain = np.clip(f2_domain, 0, 0.5)
-        # Only show domain line where f1, f2 ≥ 0 and f1 + f2 ≤ 0.5
-        mask = (f2_domain >= 0)
-        plt.plot(f1_domain[mask], f2_domain[mask], 'w--', linewidth=2, label='w1 + w2 = 0.5')
-        plt.legend(loc='upper right')
+    cf1q = ax.contourf(waxis_pos, waxis_pos, B1Q, levels=levels, cmap=cmap)
+    ax.set_title("1st Quadrant: $w_1 + w_2 \\leq 0.5$")
+    ax.set_xlabel("f1 (normalized)")
+    ax.set_ylabel("f2 (normalized)")
+    ax.grid(True)
 
+    # Overlay domain boundary: w1 + w2 = 0.5
+    f1 = waxis_pos
+    f2 = 0.5 - f1
+    f2 = np.clip(f2, 0, 0.5)
+    mask = (f2 >= 0)
+    ax.plot(f1[mask], f2[mask], 'w--', linewidth=2, label='w1 + w2 = 0.5')
+    ax.legend()
+
+    fig.colorbar(cf1q, ax=ax, label='log10(|B|)' if log_scale else '|B|')
+    fig.suptitle(title)
     plt.tight_layout()
-    if save_path:
-        plt.savefig(save_path, dpi=300)
-        print(f"[INFO] Plot saved to {save_path}")
     plt.show()
 

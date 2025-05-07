@@ -112,13 +112,42 @@ def bispecd(y, nfft=128, wind=5, nsamp=None, overlap=50):
 
     return Bspec, waxis
 
-def plot_bispecd(Bspec, waxis):
-    plt.figure(figsize=(6, 5))
-    plt.contourf(waxis, waxis, np.abs(Bspec), levels=20, cmap='viridis')
-    plt.colorbar(label='|B(f1,f2)|')
-    plt.title("Bispectrum via Direct Method with Smoothing")
+def plot_bispecd(Bspec, waxis, title="Bispectrum via Direct Method with Smoothing",
+                 log_scale=False, levels=30, cmap="viridis", save_path=None):
+    """
+    Enhanced bispectrum plot with optional log scale, contour level control, and save option.
+
+    Parameters:
+        Bspec : 2D np.ndarray
+            Bispectrum matrix (complex-valued, usually fftshifted)
+        waxis : 1D np.ndarray
+            Normalized frequency axis (from -0.5 to +0.5)
+        title : str
+            Plot title
+        log_scale : bool
+            If True, use log10(|Bspec|) for display
+        levels : int
+            Number of contour levels
+        cmap : str
+            Colormap name (e.g., 'viridis', 'plasma', 'inferno')
+        save_path : str or None
+            If given, saves plot to file (e.g., "bispec_healthy.png")
+    """
+    magnitude = np.abs(Bspec)
+    if log_scale:
+        magnitude = np.log10(magnitude + 1e-10)  # avoid log(0)
+
+    plt.figure(figsize=(7, 6))
+    contour = plt.contourf(waxis, waxis, magnitude, levels=levels, cmap=cmap)
+    plt.colorbar(contour, label='log10(|B(f1,f2)|)' if log_scale else '|B(f1,f2)|')
     plt.xlabel("f1 (normalized)")
     plt.ylabel("f2 (normalized)")
+    plt.title(title)
     plt.grid(True)
     plt.tight_layout()
+
+    if save_path:
+        plt.savefig(save_path, dpi=300)
+        print(f"[INFO] Plot saved to {save_path}")
+
     plt.show()

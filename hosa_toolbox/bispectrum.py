@@ -10,7 +10,7 @@ import numpy as np
 from scipy.signal import convolve2d
 import matplotlib.pyplot as plt
 
-def bispecd(y, nfft=128, wind=5, nsamp=None, overlap=50):
+def bispecd(y, nfft=128, wind=5, nsamp=None, overlap=50, fs=1000):
     """
     Direct (FFT-based) bispectrum estimation with frequency-domain smoothing.
 
@@ -108,7 +108,8 @@ def bispecd(y, nfft=128, wind=5, nsamp=None, overlap=50):
         Bspec = convolve2d(Bspec, opwind, mode='same')
 
     # ----- Frequency axis -----
-    waxis = np.fft.fftshift(np.fft.fftfreq(nfft, d=1.0))
+    waxis = np.fft.fftshift(np.fft.fftfreq(nfft, d=1/fs))
+
 
     return Bspec, waxis
 
@@ -155,8 +156,8 @@ def plot_bispecd(Bspec, waxis, title="Bispectrum View (Full vs. 1st Quadrant)",
 
     cf1q = ax.contourf(waxis_pos, waxis_pos, B1Q, levels=levels, cmap=cmap)
     ax.set_title("1st Quadrant: $w_1 + w_2 \\leq 0.5$")
-    ax.set_xlabel("f1 (normalized)")
-    ax.set_ylabel("f2 (normalized)")
+    ax.set_xlabel("f1 (Hz)")
+    ax.set_ylabel("f2 (Hz)")
     ax.grid(True)
 
     # Overlay domain boundary: w1 + w2 = 0.5

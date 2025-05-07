@@ -112,42 +112,59 @@ def bispecd(y, nfft=128, wind=5, nsamp=None, overlap=50):
 
     return Bspec, waxis
 
+import numpy as np
+import matplotlib.pyplot as plt
+
 def plot_bispecd(Bspec, waxis, title="Bispectrum via Direct Method with Smoothing",
-                 log_scale=False, levels=30, cmap="viridis", save_path=None):
+                 log_scale=False, levels=30, cmap="viridis", save_path=None,
+                 show_domain=True):
     """
-    Enhanced bispectrum plot with optional log scale, contour level control, and save option.
+    Enhanced bispectrum plot with optional log scale, contour level control,
+    domain boundary overlay, and save option.
 
     Parameters:
         Bspec : 2D np.ndarray
-            Bispectrum matrix (complex-valued, usually fftshifted)
+            Bispectrum matrix (fftshifted, complex-valued)
         waxis : 1D np.ndarray
-            Normalized frequency axis (from -0.5 to +0.5)
+            Normalized frequency axis [-0.5, 0.5]
         title : str
             Plot title
         log_scale : bool
-            If True, use log10(|Bspec|) for display
+            If True, show log10(|Bspec|) instead of linear magnitude
         levels : int
             Number of contour levels
         cmap : str
-            Colormap name (e.g., 'viridis', 'plasma', 'inferno')
+            Colormap name
         save_path : str or None
-            If given, saves plot to file (e.g., "bispec_healthy.png")
+            If provided, saves the figure to this file path
+        show_domain : bool
+            If True, overlays the w1 + w2 ≤ 0.5 domain boundary
     """
-    magnitude = np.abs(Bspec)
+    Babs = np.abs(Bspec)
     if log_scale:
-        magnitude = np.log10(magnitude + 1e-10)  # avoid log(0)
+        Babs = np.log10(Babs + 1e-10)
 
     plt.figure(figsize=(7, 6))
-    contour = plt.contourf(waxis, waxis, magnitude, levels=levels, cmap=cmap)
+    contour = plt.contourf(waxis, waxis, Babs, levels=levels, cmap=cmap)
     plt.colorbar(contour, label='log10(|B(f1,f2)|)' if log_scale else '|B(f1,f2)|')
+
     plt.xlabel("f1 (normalized)")
     plt.ylabel("f2 (normalized)")
     plt.title(title)
     plt.grid(True)
-    plt.tight_layout()
 
+    if show_domain:
+        # Overlay domain boundary w1 + w2 = 0.5 in first quadrant
+        w_positive = waxis[waxis >= 0]
+        f1_domain = w_positive
+        f2_domain = 0.5 - f1_domain
+        f2_domain = np.clip(f2_domain, 0, 0.5)
+        plt.plot(f1_domain, f2_domain, 'w--', linewidth=2, label='w1 + w2 = 0.5')
+        plt.legend(loc='upper right')
+
+    plt.tight_layout()
     if save_path:
         plt.savefig(save_path, dpi=300)
         print(f"[INFO] Plot saved to {save_path}")
-
     plt.show()
+

@@ -13,8 +13,8 @@ setup(
     version="1.0.0",
     author="Ioannismk",
     description="Higher-Order Spectral Analysis Toolbox for Python",
-    long_description=open("README.md").read(),
-    long_description_content_type="text/markdown",
+    #long_description=open("README.md").read(),
+    #long_description_content_type="text/markdown",
     url="https://github.com/Ioannismk/HOSA-toolbox",  # optional
     packages=find_packages(),
     install_requires=[
